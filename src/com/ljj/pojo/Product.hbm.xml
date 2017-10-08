@@ -14,5 +14,11 @@
           class="Category" 表示对应Category类，
             column="cid" 表示指向 category_表的外键 -->
     <many-to-one name="category" class="Category" column="cid" />
+    
+    <!-- 多对多 -->
+    <set name="users" table="user_product" lazy="false">
+      <key column="pid" />
+      <many-to-many column="uid" class="User" />
+    </set>
   </class>
 </hibernate-mapping>

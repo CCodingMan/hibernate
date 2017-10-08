@@ -21,5 +21,6 @@
         <!-- 识别Product这个实体类 -->
         <mapping resource="com/ljj/pojo/Product.hbm.xml" />
         <mapping resource="com/ljj/pojo/Category.hbm.xml" />
+        <mapping resource="com/ljj/pojo/User.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

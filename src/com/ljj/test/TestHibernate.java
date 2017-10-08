@@ -1,8 +1,8 @@
 package com.ljj.test;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.ljj.pojo.Category;
 import com.ljj.pojo.Product;
+import com.ljj.pojo.User;
 
 public class TestHibernate {
 
@@ -43,10 +44,76 @@ public class TestHibernate {
         //标准sql语句查询,如果只查询一个表，那就别用标准SQL语句,标准SQL语句是给某些特殊场合，需要关联多个表查询用的,标准SQL语句的结果不能直接注入一个实体类，因为标准SQL语句有可能是同时查询几个表，是没有办法插入一个实体类的。
 //        sqlQry(s);
         
+        //多对一关系
+//        manyToOne(s);
+        
+        //一对多关系，获取id=2分类下的所有商品
+//        oneToMany(s);
+        
+        //多对多关系
+//        manyToMany(s);
+        
         s.getTransaction().commit();
         //Session关闭了与Session失去了联系，相当于脱离了管理，状态就是脱管的
         s.close();
         sf.close();
+	}
+
+	/** 
+	 * @Title: manyToMany 
+	 * @Description: 多对多关系
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void manyToMany(Session s) throws HibernateException {
+		Set<User> users = new HashSet<>();
+        for (int i = 0; i < 3; i++) {
+			User u = new User();
+			u.setName("user"+i);
+			users.add(u);
+			s.save(u);
+		}
+        
+        Product p = (Product) s.get(Product.class, 1);
+        p.setUsers(users);
+        s.save(p);
+	}
+
+	/** 
+	 * @Title: oneToMany 
+	 * @Description: 一对多关系
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void oneToMany(Session s) throws HibernateException {
+		Category c = (Category) s.get(Category.class, 2);
+        Set<Product> sp = c.getProducts();
+        for (Product p : sp) {
+        	System.out.println(p.getName());
+		}
+	}
+
+	/** 
+	 * @Title: manyToOne 
+	 * @Description: 多对一关系
+	 * 通过多对一关系，设置了id=8的产品对应 id=1的分类
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void manyToOne(Session s) throws HibernateException {
+		Category c =new Category();
+        c.setName("c1");
+        s.save(c);
+        
+        Product p = (Product) s.get(Product.class, 8);
+        p.setCategory(c);
+        s.update(p);
 	}
 
 	/** 
