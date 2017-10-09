@@ -14,5 +14,7 @@
 	<classpathentry kind="lib" path="G:/eclipse/GitHub/herbinate/lib/jta-1.1.jar"/>
 	<classpathentry kind="lib" path="G:/eclipse/GitHub/herbinate/lib/mysql-connector-java-5.0.8-bin.jar"/>
 	<classpathentry kind="lib" path="G:/eclipse/GitHub/herbinate/lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="G:/eclipse/GitHub/herbinate/lib/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="G:/eclipse/GitHub/herbinate/lib/druid-1.1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
