@@ -8,6 +8,7 @@ public class Product {
     float price;
     Category category;
     Set<User> users;
+    int version;
     
     public int getId() {
         return id;
@@ -38,6 +39,12 @@ public class Product {
 	}
 	public void setUsers(Set<User> users) {
 		this.users = users;
+	}
+	public int getVersion() {
+		return version;
+	}
+	public void setVersion(int version) {
+		this.version = version;
 	}
     
 }

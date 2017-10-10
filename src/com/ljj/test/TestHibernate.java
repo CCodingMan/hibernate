@@ -1,6 +1,7 @@
 package com.ljj.test;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -101,11 +102,136 @@ public class TestHibernate {
 //        getCurrentSession是所有操作都必须放在事务中进行，并且提交事务后，
 //        session就自动关闭，不能够再进行关闭。
           
+        //N+1
+//        nQry(s);
+        
+        //查询总数
+//		qryTotal(s);
+        
+        //乐观锁
+/*        场景：故意创造一个场景来制造脏数据。
+            1. 通过session1得到id=1的对象 product1
+            2. 在product1原来价格的基础上增加1000
+            3. 更新product1之前，通过session2得到id=1的对象product2
+            4. 在product2原来价格的基础上增加1000
+            5. 更新product1
+            6. 更新product2
+                          最后结果是product的价格只增加了1000，而不是2000
+                      解决办法：
+             1.增加一个version字段，用于版本信息控制。这就是乐观锁的核心机制。
+               <version name="version" column="ver" type="int"></version>
+                                注意： version元素必须紧跟着id后面，否则会出错。
+             2.修改 Product.java  增加version属性
+*/
+//        happyLock(sf, s);
+        
+        //c3p0连接池
+/*      建立数据库连接时比较消耗时间的，所以通常都会采用数据库连接池的技术来建立多条数据库连接，
+                 并且在将来持续使用，从而节约掉建立数据库连接的时间 
+        hibernate本身是提供了数据库连接池的，
+                 但是hibernate官网也不推荐使用他自带的数据库连接池。 
+                 一般都会使用第三方的数据库连接池 
+        C3P0是免费的第三方的数据库连接池，并且有不错的表现 
+                  注：当运行次数不大的时候，从运行效果上来看，是看不出区别的。 只有在高并发量的情况下，
+                  才会体会出来。本知识主要是提供这个相关配置办法，以供以后有需要的时候，查询与修改方便。
+        */
+        connectionPool(s);
         
         s.getTransaction().commit();
         //Session关闭了与Session失去了联系，相当于脱离了管理，状态就是脱管的
         s.close();
         sf.close();
+	}
+
+	/** 
+	 * @Title: connectionPool 
+	 * @Description: 连接池
+	 * 1.hibernate.cfg.xml配置连接池，去掉二级缓存配置
+	 * 2.映射xml文件去掉二级缓存配置<cache usage="read-only" />
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void connectionPool(Session s) throws HibernateException {
+		s.createQuery("from Category").list();
+	}
+
+	/** 
+	 * @Title: happyLock 
+	 * @Description: 乐观锁
+	 * @param @param sf
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void happyLock(SessionFactory sf, Session s) throws HibernateException {
+		Session s2 = sf.openSession();
+        s2.beginTransaction();
+        Product p1 = (Product) s.get(Product.class, 1);
+        System.out.println("产品原本价格是: " + p1.getPrice());
+        p1.setPrice(p1.getPrice() + 1000);
+        Product p2 = (Product) s2.get(Product.class, 1);
+        p2.setPrice(p2.getPrice() + 1000);
+        s.update(p1);
+        s2.update(p2);
+        s2.getTransaction().commit();
+        Product p = (Product) s.get(Product.class, 1);
+        System.out.println("经过两次价格增加后，价格变为: " + p.getPrice());
+        s2.close();
+	}
+
+	/** 
+	 * @Title: qryTotal 
+	 * @Description: 查询总数
+	 * select count(*) from ....创建一个Query对象，
+	 * 调用Query对象的uniqueResult()方法，返回一个long型的数据，即查询总数
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void qryTotal(Session s) throws HibernateException {
+		String name = "iphone";
+        Query q = s.createQuery("select count(*) from Product p "
+        		+ "where p.name like ?");
+        q.setString(0, "%"+name+"%");
+        long total = (long) q.uniqueResult();
+        System.out.println(total);
+	}
+
+	/** 
+	 * @Title: nQry 
+	 * @Description: N+1
+	 * Hibernate有缓存机制，可以通过用id作为key把product对象保存在缓存中 
+     * 同时hibernate也提供Query的查询方式。假设数据库中有100条记录，
+     * 其中有30条记录在缓存中，但是使用Query的的list方法，
+     * 就会所有的100条数据都从数据库中查询，而无视这30条缓存中的记录 
+     * N+1是什么意思呢，首先执行一条sql语句，去查询这100条记录，但是，
+     * 只返回这100条记录的ID 
+     * 然后再根据id,进行进一步查询。 
+     * 如果id在缓存中，就从缓存中获取product对象了，否则再从数据库中获取.
+     * 首先通过Query的iterator把所有满足条件的Product的id查出来
+     * 然后再通过it.next()查询每一个对象
+     * 如果这个对象在缓存中，就直接从缓存中取了
+     * 否则就从数据库中获取
+     * N+1中的1，就是指只返回id的SQL语句，N指的是如果在缓存中找不到对应的数据，
+     * 就到数据库中去查
+	 * @param @param s
+	 * @param @throws HibernateException 
+	 * @return void 
+	 * @throws 
+	 */
+	public static void nQry(Session s) throws HibernateException {
+		String name = "iphone";
+        Query q = s.createQuery("from Product p where p.name like ?");
+        q.setString(0, "%"+name+"%");
+        Iterator<Product> it = q.iterate();
+        while(it.hasNext()){
+        	Product p = it.next();
+        	System.out.println(p.getName());
+        }
 	}
 
 	/** 

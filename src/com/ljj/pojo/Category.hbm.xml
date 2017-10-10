@@ -5,7 +5,7 @@
 <hibernate-mapping package="com.ljj.pojo">
   <class name="Category" table="category">
     
-    <!-- 二级缓存配置 -->
+    <!-- 二级缓存配置 若开启连接池则关闭二级缓存-->
     <cache usage="read-only" />
     
     <id name="id" column="id">

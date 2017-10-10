@@ -7,6 +7,8 @@
     <id name="id" column="id">
       <generator class="native"></generator>
     </id>
+    <!-- 乐观锁 version元素必须紧挨着id后面  -->
+    <version name="version" column="ver" type="int"></version>
     <property name="name" column="name" />
     <property name="price" />
     <!-- 多对一，多个产品对应一个品类，
