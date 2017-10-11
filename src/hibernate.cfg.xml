@@ -46,8 +46,21 @@
         <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
         
         <!-- 识别Product这个实体类 -->
-        <mapping resource="com/ljj/pojo/Product.hbm.xml" />
-        <mapping resource="com/ljj/pojo/Category.hbm.xml" />
-        <mapping resource="com/ljj/pojo/User.hbm.xml" />
+        <!-- xml方式引入映射文件 -->
+        <!-- <mapping resource="com/ljj/pojo/Product.hbm.xml" /> -->
+        
+        <!-- 注解方式 -->
+        <mapping class="com.ljj.pojo.Product" />
+        
+        <!-- <mapping resource="com/ljj/pojo/Category.hbm.xml" /> -->
+        
+        <!-- 注解方式 -->
+        <mapping class="com.ljj.pojo.Category" />
+        
+        <!-- <mapping resource="com/ljj/pojo/User.hbm.xml" /> -->
+        
+        <!-- 注解方式 -->
+        <mapping class="com.ljj.pojo.User" />
+        
   </session-factory>
 </hibernate-configuration>

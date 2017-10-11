@@ -135,12 +135,35 @@ public class TestHibernate {
                   注：当运行次数不大的时候，从运行效果上来看，是看不出区别的。 只有在高并发量的情况下，
                   才会体会出来。本知识主要是提供这个相关配置办法，以供以后有需要的时候，查询与修改方便。
         */
-        connectionPool(s);
+//        connectionPool(s);
+        
+        //注解1
+//        Category c = (Category) s.get(Category.class, 1);
+        
+        //注解2
+//	    Set<User> users = new HashSet();
+//	    for (int i = 0; i < 3; i++) {
+//	        User u =new User();
+//	        u.setName("user"+i);
+//	        users.add(u);
+//	        s.save(u);
+//	     }
+//	        
+//	     //产品1被用户1,2,3购买
+//	     Product p1 = (Product) s.get(Product.class, 1);
+//	     p1.setUsers(users);
         
         s.getTransaction().commit();
         //Session关闭了与Session失去了联系，相当于脱离了管理，状态就是脱管的
         s.close();
         sf.close();
+        
+        //注解1
+//        Set<Product> ps = c.getProducts();
+//        for (Product p : ps) {
+//            System.out.println(p.getName());
+//        }
+        
 	}
 
 	/** 
@@ -423,7 +446,7 @@ public class TestHibernate {
 		}
         
         Product p = (Product) s.get(Product.class, 1);
-        p.setUsers(users);
+//        p.setUsers(users);
         s.save(p);
 	}
 
@@ -458,7 +481,7 @@ public class TestHibernate {
         s.save(c);
         
         Product p = (Product) s.get(Product.class, 8);
-        p.setCategory(c);
+//        p.setCategory(c);
         s.update(p);
 	}
 

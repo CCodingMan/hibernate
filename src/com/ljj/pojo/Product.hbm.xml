@@ -3,24 +3,33 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.ljj.pojo">
-  <class name="Product" table="product_">
+  <!-- <class name="Product" table="product_">
     <id name="id" column="id">
       <generator class="native"></generator>
     </id>
-    <!-- 乐观锁 version元素必须紧挨着id后面  -->
+    乐观锁 version元素必须紧挨着id后面 
     <version name="version" column="ver" type="int"></version>
     <property name="name" column="name" />
     <property name="price" />
-    <!-- 多对一，多个产品对应一个品类，
+    多对一，多个产品对应一个品类，
         name="category" 对应Product类中的category属性，
           class="Category" 表示对应Category类，
-            column="cid" 表示指向 category_表的外键 -->
+            column="cid" 表示指向 category_表的外键
     <many-to-one name="category" class="Category" column="cid" />
     
-    <!-- 多对多 -->
+    多对多
     <set name="users" table="user_product" lazy="false">
       <key column="pid" />
       <many-to-many column="uid" class="User" />
     </set>
+  </class> -->
+  
+  <!-- 注解配置 -->
+  <class name="Product" table="product_">
+    <id name="id" column="id">
+      <generator class="native"></generator>
+    </id>
+    <property name="name" />
+    <property name="price" />
   </class>
 </hibernate-mapping>
